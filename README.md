@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CLOPE Mushroom Clustering Dashboard
 
-## Getting Started
+Этот проект представляет собой реализацию алгоритма кластеризации категориальных данных CLOPE на примере классического датасета Agaricus-Lepiota (грибы). 
 
-First, run the development server:
+Отличительная особенность решения — пользовательский интерфейс построен не на стандартном React JSX, а с использованием **MY-UI**: самописной экспериментальной обертки над React, вдохновленной декларативным синтаксисом и method chaining из Apple SwiftUI.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🍄 Особенности реализации задачи
+
+Проект разделен на логические слои: алгоритм, многопоточность и UI.
+
+* **Чистая реализация CLOPE (`src/shared/clope-mushrooms/core`):** Алгоритм написан на чистом TypeScript, не привязан к React и оперирует абстрактными транзакциями. Реализованы обе фазы алгоритма с расчетом функции глобального критерия (Profit).
+* **Web Workers для вычислений (`src/shared/clope-mushrooms/services/clope.worker.ts`):** Кластеризация тысяч записей блокирует главный поток. Для сохранения отзывчивости интерфейса (особенно при перетаскивании ползунка Repulsion) все тяжелые расчеты вынесены в отдельный воркер.
+* **Декларативный UI (`src/features/my-ui`):** Интерфейс собирается через цепочки вызовов методов, инкапсулируя логику стилизации и верстки внутри типизированных объектов.
+
+## 🏗 Подход к UI: Зачем понадобился MY-UI?
+
+Вместо использования привычных `<div>` и CSS-классов, интерфейс собирается через объектно-ориентированный подход. 
+
+**Что это демонстрирует:**
+1.  **Глубокое понимание TypeScript:** Реализация строгой типизации для цепочек методов (method chaining) и динамических пропсов.
+2.  **Работа с паттернами проектирования:** Архитектура строится на паттерне «Декоратор» — каждый визуальный модификатор (например, `.padding()`, `.background()`) оборачивает базовый класс `MYView` в новый объект `MYModifiedContent`, прокидывая контекст рендера.
+3.  **Инкапсуляция логики:** Сложное поведение (например, расчет hit-testing для кнопок, генерация SVG-путей для скругленных углов с continuous-сглаживанием) скрыто за лаконичным API.
+
+### Пример синтаксиса (из `MushroomActionButton.tsx`)
+
+```tsx
+import { MYButton, MYText, MYCapsule, MYColor, MYHStack, MYSpacer } from "@/src/features/my-ui";
+
+// Сборка кнопки происходит не через JSX-теги, а через композицию объектов
+export function MushroomActionButton(text: string, action: () => void, backgroundColor: MYColor) {
+    return new MYButton(
+        action,
+        new MYText(text)
+            .font("headline")
+            .padding({ edges: "horizontal", length: 24 })
+            .padding({ edges: "vertical", length: 14 })
+            .background(backgroundColor)
+            .foregroundStyle("white")
+    )
+    .clipShape(new MYCapsule())
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ⚠️ Known Issues & Trade-offs (Ограничения подхода)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Подход с MY-UI применен исключительно в экспериментальных и демонстрационных целях. Для полноценного продакшена архитектура имеет ряд существенных недостатков, о которых я знаю:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+* **Аллокация памяти и Garbage Collector:** Архитектура реализована «в лоб». При каждом рендере React-компонента заново создаются десятки экземпляров классов (`new MYText()`, `new MYVStack()` и всех их модификаторов). Это создает большую нагрузку на сборщик мусора и при масштабировании приведет к просадкам производительности.
+* **Стилизация через inline-стили:** Модификаторы преобразуются в `React.CSSProperties`. Это блокирует использование медиа-запросов, псевдоклассов (`:hover`, `:focus`) и менее оптимально, чем генерация статического CSS или использование Tailwind.
+* **Конфликты Layout-моделей:** Попытка натянуть парадигму SwiftUI на веб-стандарты приводит к тому, что поведение контейнеров (например, `MYZStack`) иногда требует костылей из-за особенностей того, как CSS Grid и Flexbox обрабатывают вложенные элементы.
+* **Интеграция JSX и нехватка компонентов:** Таблица с результатами кластеризации написана на стандартном JSX и обернута в `MYAnyView`, так как текущего набора компонентов фреймворка пока недостаточно для реализации сложных таблиц исключительно ООП-методами.
 
-## Learn More
+## 🚀 Быстрый старт
 
-To learn more about Next.js, take a look at the following resources:
+Убедитесь, что у вас установлен Node.js.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Установите зависимости:
+```bash
+npm install
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. Запустите сервер разработки:
+```bash
+npm run dev
+```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Откройте `http://localhost:3000` в браузере. Вы увидите дашборд:
+   * Нажмите «Скачать данные» (загрузка датасета `agaricus-lepiota.data`).
+   * Нажмите «Фаза 1» для первичного распределения.
+   * Запустите «Фаза 2» для оптимизации функции профита.
