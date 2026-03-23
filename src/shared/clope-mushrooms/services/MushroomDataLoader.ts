@@ -6,30 +6,40 @@ export class MushroomDataLoader {
     async fetchTransactions(): Promise<string[][]> {
         const urlString = "/data/agaricus-lepiota.data";// "https://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/agaricus-lepiota.data";
 
-        const response = await fetch(urlString);
+        let response: Response;
+
+        try {
+            response = await fetch(urlString);
+        } catch (error) {
+            throw new Error("Не удалось подключиться к серверу.");
+        }
 
         if (!response.ok) {
             throw new Error(`Ошибка сети: ${response.status} ${response.statusText}`);
         }
 
-        const content = await response.text();
+        try {
+            const content = await response.text();
 
-        const rows = content.split('\n').filter(row => row.trim() !== '');
+            const rows = content.split('\n').filter(row => row.trim() !== '');
 
-        const transactions = rows.map(row => {
-            const elements = row.split(',');
-            const features: MushroomFeature[] = [];
+            const transactions = rows.map(row => {
+                const elements = row.split(',');
+                const features: MushroomFeature[] = [];
 
-            elements.forEach((element, offset) => {
-                const char = element.trim().charAt(0);
-                if (char && char !== '?') {
-                    features.push(`${offset}:${char}`);
-                }
+                elements.forEach((element, offset) => {
+                    const char = element.trim().charAt(0);
+                    if (char && char !== '?') {
+                        features.push(`${offset}:${char}`);
+                    }
+                });
+
+                return features;
             });
 
-            return features;
-        });
-
-        return transactions;
+            return transactions;
+        } catch (error) {
+            throw new Error("Обрыв соединения при скачивании данных.");
+        }
     }
 }

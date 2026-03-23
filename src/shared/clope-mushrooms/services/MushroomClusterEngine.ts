@@ -18,7 +18,7 @@ export class MushroomClusterEngine {
     }
 
     runPhaseTwo(): { profit: number, clusters: ClusterInfo[] } | null {
-        if (!this.partition) return null;
+        if (this.partition === null) return null;
         this.partition.runPhaseTwo(12);
         return this.extractResults(this.partition);
     }
@@ -57,6 +57,6 @@ export class MushroomClusterEngine {
 
         infoList.sort((a, b) => b.size - a.size);
 
-        return { profit: partition.profit, clusters: infoList };
+        return { profit: partition.profit ?? 0, clusters: infoList };
     }
 }

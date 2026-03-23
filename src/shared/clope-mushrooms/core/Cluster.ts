@@ -2,17 +2,18 @@
 import { TransactionData } from './TransactionData';
 
 export class Cluster<Item> {
-    public readonly transactions: Set<number> = new Set();
     public readonly itemFrequencies: Map<Item, number> = new Map();
 
-    public totalItemsCount: number = 0;
+    private totalItemsCount: number = 0;
 
     get uniqueItemsCount(): number {
         return this.itemFrequencies.size;
     }
 
+    private _transactionCount: number = 0;
+
     get transactionCount(): number {
-        return this.transactions.size;
+        return this._transactionCount;
     }
 
     profitNumerator(repulsion: number): number {
@@ -32,6 +33,7 @@ export class Cluster<Item> {
             }
         }
 
+        if (newUniqueCount === 0) return 0;
         const g = newTotalItems / Math.pow(newUniqueCount, repulsion);
         return g * newTransactionCount;
     }
@@ -55,8 +57,8 @@ export class Cluster<Item> {
         return g * newTransactionCount;
     }
 
-    add(transactionID: number, txData: TransactionData<Item>): void {
-        this.transactions.add(transactionID);
+    add(txData: TransactionData<Item>): void {
+        this._transactionCount += 1;
         this.totalItemsCount += txData.itemsCount;
 
         for (const [item, count] of txData.frequencies) {
@@ -65,8 +67,8 @@ export class Cluster<Item> {
         }
     }
 
-    remove(transactionID: number, txData: TransactionData<Item>): void {
-        if (!this.transactions.delete(transactionID)) return;
+    remove(txData: TransactionData<Item>): void {
+        this._transactionCount -= 1;
 
         this.totalItemsCount -= txData.itemsCount;
 

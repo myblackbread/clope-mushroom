@@ -17,34 +17,46 @@ export function useMushroomViewModel() {
     const workerRef = useRef<Worker | null>(null);
 
     useEffect(() => {
-        workerRef.current = new Worker(new URL('../services/clope.worker.ts', import.meta.url));
+        try {
+            workerRef.current = new Worker(new URL('../services/clope.worker.ts', import.meta.url));
+            
+            workerRef.current.onerror = (errorEvent) => {
+                setErrorMessage(`Критическая ошибка Worker'а: ${errorEvent.message}`);
+                setIsFetching(false);
+                setIsCalculating(false);
+            };
 
-        workerRef.current.onmessage = (event) => {
-            const data = event.data;
+            workerRef.current.onmessage = (event) => {
+                const data = event.data;
 
-            switch (data.type) {
-                case WorkerMsgType.INIT_DONE:
-                    setIsDataLoaded(true);
-                    setIsFetching(false);
-                    break;
-                case WorkerMsgType.PHASE_ONE_DONE:
-                    setCurrentProfit(data.payload.profit);
-                    setClustersInfo(data.payload.clusters);
-                    setIsPhaseOneCompleted(true);
-                    setIsCalculating(false);
-                    break;
-                case WorkerMsgType.PHASE_TWO_DONE:
-                    if (data.payload) {
+                switch (data.type) {
+                    case WorkerMsgType.INIT_DONE:
+                        setIsDataLoaded(true);
+                        setIsFetching(false);
+                        break;
+                    case WorkerMsgType.PHASE_ONE_DONE:
                         setCurrentProfit(data.payload.profit);
                         setClustersInfo(data.payload.clusters);
-                    }
-                    setIsCalculating(false);
-                case WorkerMsgType.ERROR:
-                    setErrorMessage(`Ошибка Worker: ${data.payload}`);
-                    setIsFetching(false);
-                    setIsCalculating(false);
-            }
-        };
+                        setIsPhaseOneCompleted(true);
+                        setIsCalculating(false);
+                        break;
+                    case WorkerMsgType.PHASE_TWO_DONE:
+                        if (data.payload) {
+                            setCurrentProfit(data.payload.profit);
+                            setClustersInfo(data.payload.clusters);
+                        }
+                        setIsCalculating(false);
+                        break;
+                    case WorkerMsgType.ERROR:
+                        setErrorMessage(`Ошибка Worker: ${data.payload}`);
+                        setIsFetching(false);
+                        setIsCalculating(false);
+                }
+            };
+
+        } catch (error: any) {
+            setErrorMessage("Не удалось запустить фоновый процесс. Проверьте настройки браузера.");
+        }
 
         return () => {
             workerRef.current?.terminate();
@@ -67,22 +79,18 @@ export function useMushroomViewModel() {
         [repulsion, setRepulsion]
     );
 
-    const loadData = async () => {
+    const loadData = () => {
+        if (isFetching || isCalculating) return;
+        
         setIsFetching(true);
         setErrorMessage(null);
-        try {
-            const loader = new MushroomDataLoader();
-            const rawTransactions = await loader.fetchTransactions();
-
-            workerRef.current?.postMessage({ type: "INIT", payload: rawTransactions });
-            resetClusteringState();
-        } catch (error: any) {
-            setErrorMessage(`Ошибка сети: ${error.message}`);
-            setIsFetching(false);
-        }
+        resetClusteringState();
+        
+        workerRef.current?.postMessage({ type: WorkerMsgType.INIT });
     };
 
     const runPhaseOne = () => {
+        if (isCalculating || isFetching) return;
         setErrorMessage(null);
         setIsCalculating(true);
 
@@ -93,7 +101,7 @@ export function useMushroomViewModel() {
     };
 
     const runPhaseTwo = () => {
-        if (!isPhaseOneCompleted) return;
+        if (!isPhaseOneCompleted || isCalculating || isFetching) return;
         setIsCalculating(true);
         workerRef.current?.postMessage({ type: WorkerMsgType.RUN_PHASE_TWO });
     };

@@ -12,7 +12,7 @@ export enum WorkerMsgType {
 }
 
 export type MainToWorkerMessage =
-    | { type: WorkerMsgType.INIT; payload: string[][] }
+    | { type: WorkerMsgType.INIT }
     | { type: WorkerMsgType.RUN_PHASE_ONE; payload: { repulsion: number } }
     | { type: WorkerMsgType.RUN_PHASE_TWO };
 
