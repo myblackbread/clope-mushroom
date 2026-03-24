@@ -16,12 +16,4 @@ export class MYFontWeightModifier implements MYViewModifier {
       return { fontWeight: this.weight };
     }
   }
-
-  body(content: React.ReactNode): React.ReactNode {
-    return (
-      <MYContextWrapper transform={(context) => this.transformContext(context)}>
-        {content}
-      </MYContextWrapper>
-    );
-  }
 }

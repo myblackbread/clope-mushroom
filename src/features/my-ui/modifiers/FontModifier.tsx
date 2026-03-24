@@ -16,12 +16,4 @@ export class MYFontModifier implements MYViewModifier {
       return { font: this.font };
     }
   }
-
-  body(content: React.ReactNode): React.ReactNode {
-    return (
-      <MYContextWrapper transform={(context) => this.transformContext(context)}>
-        {content}
-      </MYContextWrapper>
-    );
-  }
 }

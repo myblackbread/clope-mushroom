@@ -1,4 +1,4 @@
-import { MYButton, MYText, MYCapsule, MYColor, MYView, MYHStack, MYSpacer } from "@/src/features/my-ui";
+import { MYButton, MYText, MYCapsule, MYColor, MYView, MYHStack, MYSpacer, MYZStack } from "@/src/features/my-ui";
 
 export function MushroomActionButton(
     text: string,
@@ -10,11 +10,11 @@ export function MushroomActionButton(
     let labelContent: MYView;
 
     if (iconView) {
-        labelContent = new MYHStack([
+        labelContent = new MYZStack([
             iconView,
-            new MYSpacer(8),
-            new MYText(text).font("headline"),
-        ]);
+            new MYText(text).font("headline")
+                .frame({ maxWidth: Infinity }),
+        ], "left");
     } else {
         labelContent = new MYText(text).font("headline");
     }

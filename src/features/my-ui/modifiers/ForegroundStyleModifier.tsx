@@ -16,12 +16,4 @@ export class MYForegroundStyleModifier implements MYViewModifier {
       return { foregroundStyle: this.style };
     }
   }
-
-  body(content: React.ReactNode): React.ReactNode {
-    return (
-      <MYContextWrapper transform={(context) => this.transformContext(context)}>
-        {content}
-      </MYContextWrapper>
-    );
-  }
 }

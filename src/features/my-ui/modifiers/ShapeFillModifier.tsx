@@ -2,7 +2,6 @@ import React from "react";
 import { MYViewModifier } from "../core/ViewModifier";
 import { MYColorType } from "../types/ColorType";
 import { MYBaseView } from "../components/BaseView";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYFrame } from "../types/Frame";
 
 export class MYShapeFillModifier implements MYViewModifier {

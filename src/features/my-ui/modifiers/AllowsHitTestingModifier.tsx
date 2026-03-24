@@ -1,7 +1,6 @@
 import React from "react";
 import { MYViewModifier } from "../core/ViewModifier";
 import { MYRenderContext } from "../types/RenderContext";
-import { MYContextWrapper } from "../core/ContextWrapper";
 
 export class MYAllowsHitTestingModifier implements MYViewModifier {
   constructor(private readonly enabled: boolean) { }
@@ -14,13 +13,5 @@ export class MYAllowsHitTestingModifier implements MYViewModifier {
     } else {
       return { allowsHitTesting: this.enabled };
     }
-  }
-
-  body(content: React.ReactNode): React.ReactNode {
-    return (
-      <MYContextWrapper transform={(context) => this.transformContext(context)}>
-        {content}
-      </MYContextWrapper>
-    );
   }
 }

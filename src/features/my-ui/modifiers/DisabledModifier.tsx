@@ -1,7 +1,6 @@
 import React from "react";
 import { MYViewModifier } from "../core/ViewModifier";
 import { MYRenderContext } from "../types/RenderContext";
-import { MYContextWrapper } from "../core/ContextWrapper";
 
 export class MYDisabledModifier implements MYViewModifier {
   constructor(private readonly isDisabled: boolean) { }
@@ -14,13 +13,5 @@ export class MYDisabledModifier implements MYViewModifier {
     } else {
       return { disabled: this.isDisabled };
     }
-  }
-
-  body(content: React.ReactNode): React.ReactNode {
-    return (
-      <MYContextWrapper transform={(context) => this.transformContext(context)}>
-        {content}
-      </MYContextWrapper>
-    );
   }
 }

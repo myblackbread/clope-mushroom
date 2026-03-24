@@ -28,6 +28,7 @@ import { MYFont, MYFontWeight } from "../types/Font";
 import { MYForegroundStyle } from "../types/ForegroundStyle";
 import { MYForegroundStyleModifier } from "../modifiers/ForegroundStyleModifier";
 import { MYDisabledModifier } from "../modifiers/DisabledModifier";
+import { MYContextWrapper } from "./ContextWrapper";
 
 export abstract class MYView {
   abstract body(frame?: MYFrame): React.ReactNode;
@@ -125,10 +126,22 @@ class MYModifiedContent extends MYView {
     super();
   }
 
-  body(): React.ReactNode {
-    const childNode = this.content.body();
+  body(frame?: MYFrame): React.ReactNode {
+    let childNode = this.content.body(frame);
 
-    return this.modifierRule.body(childNode, this.idealFrame);
+    if (this.modifierRule.body) {
+      childNode = this.modifierRule.body(childNode, this.idealFrame);
+    }
+
+    if (this.modifierRule.transformContext) {
+      return (
+        <MYContextWrapper transform={this.modifierRule.transformContext.bind(this.modifierRule)} >
+          {childNode}
+        </MYContextWrapper>
+      );
+    } else {
+      return childNode;
+    }
   }
 
   get idealFrame(): MYFrame {
