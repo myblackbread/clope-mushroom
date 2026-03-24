@@ -1,7 +1,6 @@
 import React from "react";
 import { MYView } from "../core/View";
 import { MYBaseView } from "./BaseView";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYFrame } from "../types/Frame";
 
 export class MYImage extends MYView {
@@ -9,12 +8,11 @@ export class MYImage extends MYView {
         super();
     }
 
-    body(context?: MYRenderContext, frame?: MYFrame): React.ReactNode {
+    body(frame?: MYFrame): React.ReactNode {
         if (typeof this.source === "string") {
             return (
                 <MYBaseView
                     element="img"
-                    renderContext={context}
                     dynamicStyle={{
                         src: () => this.source as string,
                         style: (prev) => ({
@@ -31,7 +29,6 @@ export class MYImage extends MYView {
 
         return (
             <MYBaseView
-                renderContext={context}
                 dynamicStyle={{
                     style: (prev) => ({
                         ...prev,

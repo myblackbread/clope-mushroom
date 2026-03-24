@@ -1,18 +1,15 @@
 import React from "react";
 import { MYView } from "../core/View";
 import { MYBaseView } from "./BaseView";
-import { MYRenderContext } from "../types/RenderContext";
-import { MYFrame } from "../types/Frame";
 
 export class MYSpacer extends MYView {
   constructor(private readonly minLength?: number) {
     super();
   }
 
-  body(context?: MYRenderContext): React.ReactNode {
+  body(): React.ReactNode {
     return (
       <MYBaseView
-        renderContext={context}
         dynamicStyle={{
           style: (prev) => ({
             ...prev,

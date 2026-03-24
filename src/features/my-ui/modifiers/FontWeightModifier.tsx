@@ -1,18 +1,19 @@
+
 import React from "react";
 import { MYViewModifier } from "../core/ViewModifier";
 import { MYRenderContext } from "../types/RenderContext";
 import { MYContextWrapper } from "../core/ContextWrapper";
+import { MYFontWeight } from "../types/Font";
 
-export class MYAllowsHitTestingModifier implements MYViewModifier {
-  constructor(private readonly enabled: boolean) { }
+export class MYFontWeightModifier implements MYViewModifier {
+  constructor(private readonly weight: MYFontWeight) { }
 
   transformContext(context?: MYRenderContext): MYRenderContext {
     if (context) {
-      const parentAllows = context?.allowsHitTesting ?? true;
-      context.allowsHitTesting = parentAllows ? this.enabled : false;
+      context.fontWeight = this.weight;
       return context;
     } else {
-      return { allowsHitTesting: this.enabled };
+      return { fontWeight: this.weight };
     }
   }
 

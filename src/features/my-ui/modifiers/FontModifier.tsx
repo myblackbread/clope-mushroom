@@ -2,28 +2,26 @@
 import React from "react";
 import { MYViewModifier } from "../core/ViewModifier";
 import { MYRenderContext } from "../types/RenderContext";
-import { MYFont, MYFontWeight } from "../types/Font";
+import { MYContextWrapper } from "../core/ContextWrapper";
+import { MYFont } from "../types/Font";
 
 export class MYFontModifier implements MYViewModifier {
-  constructor(private readonly font: MYFont) {}
+  constructor(private readonly font: MYFont) { }
 
   transformContext(context?: MYRenderContext): MYRenderContext {
-    return { ...context, font: this.font };
+    if (context) {
+      context.font = this.font;
+      return context;
+    } else {
+      return { font: this.font };
+    }
   }
 
   body(content: React.ReactNode): React.ReactNode {
-    return content;
-  }
-}
-
-export class MYFontWeightModifier implements MYViewModifier {
-  constructor(private readonly weight: MYFontWeight) {}
-
-  transformContext(context?: MYRenderContext): MYRenderContext {
-    return { ...context, fontWeight: this.weight };
-  }
-
-  body(content: React.ReactNode): React.ReactNode {
-    return content;
+    return (
+      <MYContextWrapper transform={(context) => this.transformContext(context)}>
+        {content}
+      </MYContextWrapper>
+    );
   }
 }

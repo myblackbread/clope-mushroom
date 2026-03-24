@@ -1,8 +1,7 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { MYViewModifier } from "../core/ViewModifier";
 import { MYView, MYAnyView } from "../core/View";
 import { MYBaseView } from "../components/BaseView";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYFrame } from "../types/Frame";
 
 export type MYBackgroundImage = {
@@ -17,13 +16,13 @@ export type MYBackgroundType = string | MYBackgroundImage | MYView;
 export class MYBackgroundModifier implements MYViewModifier {
     constructor(private readonly background: MYBackgroundType) { }
 
-    private renderBackground(context?: MYRenderContext, frame?: MYFrame): React.ReactNode {
+    private renderBackground(frame?: MYFrame): React.ReactNode {
         if (typeof this.background === "string") {
             return <div style={{ width: "100%", height: "100%", background: this.background }} />;
         }
 
         if (this.background instanceof MYView) {
-            return this.background.body(context, frame);
+            return this.background.body(frame);
         }
 
         const { url, repeat, position, size } = this.background;
@@ -41,11 +40,10 @@ export class MYBackgroundModifier implements MYViewModifier {
         );
     }
 
-    body(content: React.ReactNode, context?: MYRenderContext, frame?: MYFrame): React.ReactNode {
+    body(content: React.ReactNode, frame?: MYFrame): React.ReactNode {
         return (
             <MYBaseView
                 frame={frame}
-                renderContext={context}
             >
                 <div style={{
                     position: "absolute",
@@ -54,9 +52,9 @@ export class MYBackgroundModifier implements MYViewModifier {
                     display: "flex",
                     pointerEvents: "none"
                 }}>
-                    {new MYAnyView(this.renderBackground(context, frame))
+                    {new MYAnyView(this.renderBackground(frame))
                         .frame({ maxWidth: Infinity, maxHeight: Infinity })
-                        .body(context, frame)}
+                        .body(frame)}
                 </div>
                 {content}
             </MYBaseView>

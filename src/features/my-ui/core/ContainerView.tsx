@@ -2,7 +2,6 @@ import React, { CSSProperties } from "react";
 import { MYView } from "./View";
 import { MYBaseView } from "../components/BaseView";
 import { MYFrame, isFlexible } from "../types/Frame";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYDynamicStyle } from "../types/DynamicStyle";
 
 export type MYAnyViewChild = MYView | null | undefined | boolean;
@@ -35,7 +34,7 @@ export abstract class MYContainerView<K extends keyof HTMLElementTagNameMap = "d
 
     protected abstract get dynamicStyle(): MYDynamicStyle<K>;
 
-    body(context?: MYRenderContext, frame?: MYFrame): React.ReactNode {
+    body(frame?: MYFrame): React.ReactNode {
         const prefFrame = this.idealFrame;
         const childDynamicStyle = this.dynamicStyle;
 
@@ -66,10 +65,9 @@ export abstract class MYContainerView<K extends keyof HTMLElementTagNameMap = "d
             <MYBaseView
                 element={this.elementType}
                 frame={{ ...prefFrame, ...frame }}
-                renderContext={context}
                 dynamicStyle={mergedDynamicStyle}
             >
-                {this.renderContent(context)}
+                {this.renderContent()}
             </MYBaseView>
         );
     }
@@ -86,17 +84,16 @@ export abstract class MYContainerView<K extends keyof HTMLElementTagNameMap = "d
         return child;
     }
 
-    private renderContent(context?: MYRenderContext): React.ReactNode {
+    private renderContent(): React.ReactNode {
         return this.children.map((child, index) => {
             if (!(child instanceof MYView)) return null;
             return (
                 <MYBaseView
                     frame={{ maxWidth: Infinity, maxHeight: Infinity }}
                     key={index}
-                    renderContext={context}
                     dynamicStyle={{ style: (prev) => ({ ...prev, ...this.getChildWrapperStyle(index) }) }}
                 >
-                    {child.body(context)}
+                    {child.body()}
                 </MYBaseView>
             );
         });

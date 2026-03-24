@@ -6,6 +6,5 @@ export interface MYBaseViewProps<K extends keyof HTMLElementTagNameMap = "div"> 
   element?: K;
   dynamicStyle?: MYDynamicStyle<K>;
   children?: React.ReactNode;
-  renderContext?: MYRenderContext;
   frame?: MYFrame;
 }

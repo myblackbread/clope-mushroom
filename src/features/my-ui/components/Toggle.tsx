@@ -1,22 +1,21 @@
 import React from "react";
 import { MYView, MYAnyView } from "../core/View";
 import { MYBaseView } from "./BaseView";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYBinding } from "../types/Binding";
 import { MYFrame } from "../types/Frame";
 import { MYHStack } from "../stacks/HStack";
 import { MYSpacer } from "./Spacer";
+import { useMYRenderContext } from "../context/RenderContextReact";
 
 const ToggleSwitch: React.FC<{
     binding: MYBinding<boolean>;
-    context?: MYRenderContext;
-}> = ({ binding, context }) => {
+}> = ({ binding }) => {
+    const context = useMYRenderContext();
     const isDisabled = context?.disabled === true;
 
     return (
-        <MYBaseView<"input">
+        <MYBaseView
             element="input"
-            renderContext={context}
             dynamicStyle={{
                 type: () => "checkbox",
                 checked: () => binding.wrappedValue,
@@ -39,6 +38,25 @@ const ToggleSwitch: React.FC<{
     );
 };
 
+const ToggleInner: React.FC<{
+    isOn: MYBinding<boolean>;
+    label: MYView;
+    frame?: MYFrame;
+}> = ({ isOn, label, frame }) => {
+    const context = useMYRenderContext();
+    const isDisabled = context?.disabled === true;
+
+    const toggleLayout = new MYHStack([
+        label,
+        new MYSpacer(),
+        new MYAnyView(<ToggleSwitch binding={isOn} />)
+    ]);
+
+    return toggleLayout
+        .opacity(isDisabled ? 0.5 : 1)
+        .body(frame);
+};
+
 export class MYToggle extends MYView {
     constructor(
         private readonly isOn: MYBinding<boolean>,
@@ -47,18 +65,14 @@ export class MYToggle extends MYView {
         super();
     }
 
-    body(context?: MYRenderContext, frame?: MYFrame): React.ReactNode {
-        const isDisabled = context?.disabled === true;
-
-        const toggleLayout = new MYHStack([
-            this.label,
-            new MYSpacer(),
-            new MYAnyView(<ToggleSwitch binding={this.isOn} context={context} />)
-        ]);
-
-        return isDisabled
-            ? toggleLayout.opacity(0.5).body(context, frame)
-            : toggleLayout.body(context, frame);
+    body(frame?: MYFrame): React.ReactNode {
+        return (
+            <ToggleInner
+                isOn={this.isOn}
+                label={this.label}
+                frame={frame}
+            />
+        );
     }
 
     get idealFrame(): MYFrame {

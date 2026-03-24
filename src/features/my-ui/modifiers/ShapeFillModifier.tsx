@@ -8,7 +8,7 @@ import { MYFrame } from "../types/Frame";
 export class MYShapeFillModifier implements MYViewModifier {
   constructor(private readonly color: MYColorType) { }
 
-  body(content: React.ReactNode, context?: MYRenderContext, frame?: MYFrame): React.ReactNode {
+  body(content: React.ReactNode, frame?: MYFrame): React.ReactNode {
     const colorValue = typeof this.color === "string"
       ? this.color
       : this.color.rawValue;
@@ -16,7 +16,6 @@ export class MYShapeFillModifier implements MYViewModifier {
     return (
       <MYBaseView
         frame={frame}
-        renderContext={context}
         dynamicStyle={{
           style: (prev) => ({
             ...prev,

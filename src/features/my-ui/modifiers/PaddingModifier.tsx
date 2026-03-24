@@ -2,10 +2,8 @@
 import React from "react";
 import { MYViewModifier } from "../core/ViewModifier";
 import { MYBaseView } from "../components/BaseView";
-import { MYEdge } from "../types/Edge";
 import { MYEdgeInsets } from "../types/EdgeInsets";
 import { MYPadding } from "../types/Padding";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYFrame } from "../types/Frame";
 
 export class MYPaddingModifier implements MYViewModifier {
@@ -59,14 +57,13 @@ export class MYPaddingModifier implements MYViewModifier {
         }
     }
 
-    body(content: React.ReactNode, context?: MYRenderContext, frame?: MYFrame): React.ReactNode {
+    body(content: React.ReactNode, frame?: MYFrame): React.ReactNode {
         const style = this.getStyle();
 
         if (!style) return content;
 
         return (
             <MYBaseView
-                renderContext={context}
                 frame={frame}
                 dynamicStyle={{
                     style: (prev) => ({

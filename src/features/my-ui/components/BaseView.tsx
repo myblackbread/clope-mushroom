@@ -3,6 +3,7 @@ import { MYDynamicStyle } from "../types/DynamicStyle";
 import { MYBaseViewProps } from "../types/BaseViewProps";
 import { frameToStyle } from "../utils/frameToStyle";
 import { MYComponentProps } from "../types/ComponentProps";
+import { useMYRenderContext } from "../context/RenderContextReact";
 
 const BASE_STYLES: React.CSSProperties = {
   display: "flex",
@@ -19,8 +20,10 @@ const BaseViewRender = <K extends keyof HTMLElementTagNameMap = "div">(
   props: MYBaseViewProps<K>,
   ref: React.Ref<HTMLElementTagNameMap[K]>
 ) => {
-  const { element, frame, dynamicStyle, children, renderContext } = props;
+  const { element, frame, dynamicStyle, children } = props;
   const component = (element || "div") as string;
+
+  const renderContext = useMYRenderContext();
 
   const transitionStyle = renderContext?.animation
     ? { transition: `all ${renderContext.animation.duration}s ${renderContext.animation.timingCurve}` }

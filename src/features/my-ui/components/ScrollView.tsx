@@ -1,7 +1,6 @@
 import React from "react";
 import { MYView } from "../core/View";
 import { MYBaseView } from "./BaseView";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYFrame } from "../types/Frame";
 import { MYAxis } from "../types/Axis";
 
@@ -13,11 +12,10 @@ export class MYScrollView extends MYView {
         super();
     }
 
-    body(context?: MYRenderContext, frame?: MYFrame): React.ReactNode {
+    body(frame?: MYFrame): React.ReactNode {
         return (
             <MYBaseView
                 frame={frame}
-                renderContext={context}
                 dynamicStyle={{
                     style: (prev) => ({
                         ...prev,
@@ -44,7 +42,7 @@ export class MYScrollView extends MYView {
                     minHeight: this.axis === "vertical" ? "fit-content" : "100%", 
                     flexShrink: 0
                 }}>
-                    {this.content.body(context)}
+                    {this.content.body()}
                 </div>
             </MYBaseView>
         );

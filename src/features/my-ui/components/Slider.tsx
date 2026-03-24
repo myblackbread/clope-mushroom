@@ -1,21 +1,22 @@
 import React from "react";
 import { MYAnyView, MYView } from "../core/View";
 import { MYBaseView } from "./BaseView";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYBinding } from "../types/Binding";
 import { MYFrame } from "../types/Frame";
+import { useMYRenderContext } from "../context/RenderContextReact";
 
 const SliderInner: React.FC<{
+    frame?: MYFrame;
     binding: MYBinding<number>;
     range: [number, number];
     step?: number;
-    context?: MYRenderContext;
-}> = ({ binding, range, step, context }) => {
+}> = ({ frame, binding, range, step }) => {
+    const context = useMYRenderContext();
     const isDisabled = context?.disabled === true;
-    return (
+
+    const sliderBase = new MYAnyView(
         <MYBaseView
             element="input"
-            renderContext={context}
             dynamicStyle={{
                 type: () => "range",
                 min: () => range[0],
@@ -31,14 +32,18 @@ const SliderInner: React.FC<{
                 style: (prev) => ({
                     ...prev,
                     width: "100%",
-                    cursor: "pointer",
+                    cursor: isDisabled ? "default" : "pointer",
                     pointerEvents: isDisabled ? "none" : "auto",
-                    opacity: isDisabled ? 0.5 : 1,
                     margin: 0
                 })
             }}
         />
     );
+
+    return sliderBase
+        .frame({ maxWidth: Infinity })
+        .opacity(isDisabled ? 0.5 : 1)
+        .body(frame);
 };
 
 export class MYSlider extends MYView {
@@ -50,22 +55,15 @@ export class MYSlider extends MYView {
         super();
     }
 
-    body(context?: MYRenderContext, frame?: MYFrame): React.ReactNode {
-
-        const isDisabled = context?.disabled === true;
-
-        const sliderView = new MYAnyView(
+    body(frame?: MYFrame): React.ReactNode {
+        return (
             <SliderInner
+                frame={frame}
                 binding={this.value}
                 range={this.range}
                 step={this.step}
-                context={context}
             />
         );
-
-        return isDisabled
-            ? sliderView.opacity(0.5).body(context, frame)
-            : sliderView.body();
     }
 
     get idealFrame(): MYFrame {

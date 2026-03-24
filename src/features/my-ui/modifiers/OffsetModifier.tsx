@@ -1,15 +1,13 @@
-import { CSSProperties } from "react";
-import { MYSize, isSize } from "../types/Size";
+import { isSize } from "../types/Size";
 import { MYViewModifier } from "../core/ViewModifier";
 import { MYBaseView } from "../components/BaseView";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYOffset } from "../types/Offset";
 import { MYFrame } from "../types/Frame"
 
 export class MYOffsetModifier implements MYViewModifier {
     constructor(private readonly value: MYOffset) { }
 
-    body(content: React.ReactNode, context?: MYRenderContext, frame?: MYFrame): React.ReactNode {
+    body(content: React.ReactNode, frame?: MYFrame): React.ReactNode {
         let x: number | undefined;
         let y: number | undefined;
 
@@ -37,7 +35,6 @@ export class MYOffsetModifier implements MYViewModifier {
         return (
             <MYBaseView
                 frame={frame}
-                renderContext={context}
                 dynamicStyle={{
                     style: (prev) => ({
                         ...prev,

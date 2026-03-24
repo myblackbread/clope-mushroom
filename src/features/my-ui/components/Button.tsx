@@ -1,19 +1,19 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 import { MYView, MYAnyView } from "../core/View";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYBaseView } from "./BaseView";
 import { MYColor } from "./Color";
 import { MYFrame } from "../types/Frame";
+import { useMYRenderContext } from "../context/RenderContextReact";
 
 const ButtonInner: React.FC<{
+    frame?: MYFrame;
     action: () => void;
-    children: React.ReactNode;
-    context?: MYRenderContext;
-}> = ({ action, children, context }) => {
-    const [isPressed, setIsPressed] = useState(false);
+    children: MYView;
+}> = ({ frame, action, children }) => {
+    const context = useMYRenderContext();
 
-    const isPressedRef = useRef(false);
-
+    const [isPressed, setIsPressed] = React.useState(false);
+    const isPressedRef = React.useRef(false);
     const isDisabled = context?.disabled === true;
 
     const pressOverlay = MYColor.rgb(1, 1, 1, isPressed && !isDisabled ? 0.3 : 0).allowsHitTesting(false);
@@ -21,7 +21,6 @@ const ButtonInner: React.FC<{
     const hitTestLayer = new MYAnyView(
         <MYBaseView
             element="button"
-            renderContext={context}
             frame={{ maxWidth: Infinity, maxHeight: Infinity }}
             dynamicStyle={{
                 style: (prev) => ({
@@ -37,13 +36,10 @@ const ButtonInner: React.FC<{
                     setIsPressed(true);
                     try {
                         (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-                    } catch (err) {
-
-                    }
+                    } catch (err) { }
                 },
                 onPointerUp: (prev) => (e) => {
                     if (prev) prev(e);
-
                     if (isPressedRef.current) {
                         isPressedRef.current = false;
                         setIsPressed(false);
@@ -69,11 +65,12 @@ const ButtonInner: React.FC<{
         />
     );
 
-    const finalContent = new MYAnyView(children)
+    return new MYAnyView(children.body(frame))
+        .frame(children.idealFrame)
         .overlay(pressOverlay)
-        .overlay(hitTestLayer);
-
-    return finalContent.body(context);
+        .overlay(hitTestLayer)
+        .opacity(isDisabled ? 0.5 : 1)
+        .body(frame);
 };
 
 export class MYButton extends MYView {
@@ -84,19 +81,17 @@ export class MYButton extends MYView {
         super();
     }
 
-    body(context?: MYRenderContext, frame?: MYFrame): React.ReactNode {
-        const isDisabled = context?.disabled === true;
-
-        const buttonView = new MYAnyView(
+    body(frame?: MYFrame): React.ReactNode {
+        return (
             <ButtonInner
+                frame={frame}
                 action={this.action}
-                children={this.label.body(context, frame)}
-                context={context}
+                children={this.label}
             />
         );
+    }
 
-        return isDisabled
-            ? buttonView.opacity(0.5).body(context, frame)
-            : buttonView.body();
+    get idealFrame(): MYFrame {
+        return this.label.idealFrame;
     }
 }

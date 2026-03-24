@@ -4,7 +4,6 @@ import { MYBaseView } from "../components/BaseView";
 import { MYScaleEffect } from "../types/ScaleEffect";
 import { MYSize } from "../types/Size";
 import { MYUnitPoint, unitPointMap } from "../types/UnitPoint";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYFrame } from "../types/Frame";
 
 export class MYScaleEffectModifier implements MYViewModifier {
@@ -50,7 +49,7 @@ export class MYScaleEffectModifier implements MYViewModifier {
         };
     }
 
-    body(content: React.ReactNode, context?: MYRenderContext, frame?: MYFrame): React.ReactNode {
+    body(content: React.ReactNode, frame?: MYFrame): React.ReactNode {
         const style = this.getStyle();
 
         if (!style) return content;
@@ -58,7 +57,6 @@ export class MYScaleEffectModifier implements MYViewModifier {
         return (
             <MYBaseView
                 frame={frame}
-                renderContext={context}
                 dynamicStyle={{
                     style: (prev) => ({
                         ...prev,

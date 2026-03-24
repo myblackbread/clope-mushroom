@@ -2,7 +2,6 @@ import React from "react";
 import { MYView } from "../core/View";
 import { MYBaseView } from "./BaseView";
 import { MYFrame } from "../types/Frame";
-import { MYRenderContext } from "../types/RenderContext";
 
 export class MYColor extends MYView {
     constructor(public readonly rawValue: string) {
@@ -20,10 +19,9 @@ export class MYColor extends MYView {
         return new MYColor(`rgba(${r}, ${g}, ${b}, ${a})`);
     }
 
-    body(context?: MYRenderContext): React.ReactNode {
+    body(): React.ReactNode {
         return (
             <MYBaseView
-                renderContext={context}
                 dynamicStyle={{
                     style: (prev) => ({
                         ...prev,

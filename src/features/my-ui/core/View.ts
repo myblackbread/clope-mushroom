@@ -22,14 +22,15 @@ import { MYAnimation, MYAnimations } from "../types/Animation";
 import { MYAnimationModifier } from "../modifiers/AnimationModifier";
 import { MYOffset } from "../types/Offset";
 import { MYOverlayType } from "../types/OverlayType";
-import { MYFontModifier, MYFontWeightModifier } from "../modifiers/FontModifier";
+import { MYFontModifier } from "../modifiers/FontModifier";
+import { MYFontWeightModifier } from "../modifiers/FontWeightModifier";
 import { MYFont, MYFontWeight } from "../types/Font";
 import { MYForegroundStyle } from "../types/ForegroundStyle";
 import { MYForegroundStyleModifier } from "../modifiers/ForegroundStyleModifier";
 import { MYDisabledModifier } from "../modifiers/DisabledModifier";
 
 export abstract class MYView {
-  abstract body(context?: MYRenderContext, frame?: MYFrame): React.ReactNode;
+  abstract body(frame?: MYFrame): React.ReactNode;
 
   get idealFrame(): MYFrame {
     return {};
@@ -124,14 +125,10 @@ class MYModifiedContent extends MYView {
     super();
   }
 
-  body(context?: MYRenderContext): React.ReactNode {
-    const nextContext = this.modifierRule.transformContext
-      ? this.modifierRule.transformContext(context)
-      : context;
+  body(): React.ReactNode {
+    const childNode = this.content.body();
 
-    const childNode = this.content.body(nextContext);
-
-    return this.modifierRule.body(childNode, nextContext, this.idealFrame);
+    return this.modifierRule.body(childNode, this.idealFrame);
   }
 
   get idealFrame(): MYFrame {
