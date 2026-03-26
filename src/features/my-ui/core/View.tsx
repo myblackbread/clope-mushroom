@@ -17,7 +17,6 @@ import { MYPaddingModifier } from "../modifiers/PaddingModifier";
 import { MYScaleEffect } from "../types/ScaleEffect";
 import { MYScaleEffectModifier } from "../modifiers/ScaleEffectModifier";
 import { MYFrame } from "../types/Frame";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYAnimation, MYAnimations } from "../types/Animation";
 import { MYAnimationModifier } from "../modifiers/AnimationModifier";
 import { MYOffset } from "../types/Offset";
@@ -43,6 +42,17 @@ export abstract class MYView {
 
   static from(node: React.ReactNode): MYView {
     return new MYAnyView(node);
+  }
+
+  protected _viewId?: string | number;
+
+  get viewId(): string | number | undefined {
+    return this._viewId;
+  }
+
+  id(identifier: string | number): this {
+    this._viewId = identifier;
+    return this;
   }
 
   modifier(mod: MYViewModifier): MYView {
@@ -142,6 +152,10 @@ class MYModifiedContent extends MYView {
     } else {
       return childNode;
     }
+  }
+
+  get viewId(): string | number | undefined {
+    return this._viewId ?? this.content.viewId;
   }
 
   get idealFrame(): MYFrame {

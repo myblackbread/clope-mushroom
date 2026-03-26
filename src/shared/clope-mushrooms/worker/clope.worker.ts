@@ -6,7 +6,6 @@ import { MainToWorkerMessage, WorkerToMainMessage, WorkerMsgType } from "./clope
 let engine: MushroomClusterEngine | null = null;
 let storage: ClopeStorage | null = null;
 
-// Состояние после INIT
 let totalChunksCount = 0;
 let edibleFeatureId = -1;
 let poisonousFeatureId = -1;
