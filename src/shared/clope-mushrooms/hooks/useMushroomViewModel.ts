@@ -1,8 +1,8 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { MYBinding } from "@/src/features/my-ui";
-import { MushroomDataLoader } from "../services/MushroomDataLoader";
+import { MushroomDataLoader } from "../parser/MushroomDataLoader";
 import { ClusterInfo } from "../models/ClusterInfo";
-import { WorkerMsgType, WorkerToMainMessage, MainToWorkerMessage } from "../models/clope.worker.types";
+import { WorkerMsgType, WorkerToMainMessage, MainToWorkerMessage } from "../worker/clope.worker.types";
 
 export function useMushroomViewModel() {
     const [repulsion, setRepulsionInternal] = useState<number>(2.0);
@@ -18,8 +18,11 @@ export function useMushroomViewModel() {
 
     useEffect(() => {
         try {
-            workerRef.current = new Worker(new URL('../services/clope.worker.ts', import.meta.url));
-            
+            workerRef.current = new Worker(
+                new URL('../worker/clope.worker.ts', import.meta.url),
+                { type: 'module' }
+            );
+
             workerRef.current.onerror = (errorEvent) => {
                 setErrorMessage(`Критическая ошибка Worker'а: ${errorEvent.message}`);
                 setIsFetching(false);
@@ -81,16 +84,27 @@ export function useMushroomViewModel() {
 
     const loadData = () => {
         if (isFetching || isCalculating) return;
-        
+
+        if (!workerRef.current) {
+            setErrorMessage("Фоновый процесс не инициализирован. Перезагрузите страницу.");
+            return;
+        }
+
         setIsFetching(true);
         setErrorMessage(null);
         resetClusteringState();
-        
+
         workerRef.current?.postMessage({ type: WorkerMsgType.INIT });
     };
 
     const runPhaseOne = () => {
         if (isCalculating || isFetching) return;
+
+        if (!workerRef.current) {
+            setErrorMessage("Фоновый процесс не инициализирован.");
+            return;
+        }
+
         setErrorMessage(null);
         setIsCalculating(true);
 
@@ -102,6 +116,12 @@ export function useMushroomViewModel() {
 
     const runPhaseTwo = () => {
         if (!isPhaseOneCompleted || isCalculating || isFetching) return;
+
+        if (!workerRef.current) {
+            setErrorMessage("Фоновый процесс не инициализирован.");
+            return;
+        }
+
         setIsCalculating(true);
         workerRef.current?.postMessage({ type: WorkerMsgType.RUN_PHASE_TWO });
     };

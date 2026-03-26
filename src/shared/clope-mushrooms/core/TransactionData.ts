@@ -1,15 +1,16 @@
 
-export class TransactionData<Item> {
-    public readonly itemsCount: number;
-    public readonly frequencies: Map<Item, number>;
+export class TransactionData {
+    constructor(
+        private readonly data: number[],
+        private readonly startIndex: number,
+        private readonly endIndex: number
+    ) { }
 
-    constructor(items: Item[]) {
-        this.itemsCount = items.length;
-        this.frequencies = new Map<Item, number>();
-        
-        for (const item of items) {
-            const currentCount = this.frequencies.get(item) ?? 0;
-            this.frequencies.set(item, currentCount + 1);
+    *[Symbol.iterator](): IterableIterator<[number, number]> {
+        for (let i = this.startIndex; i < this.endIndex; i += 2) {
+            if (i + 1 < this.endIndex) {
+                yield [this.data[i], this.data[i + 1]];
+            }
         }
     }
 }

@@ -19,9 +19,9 @@ import {
 import { ArrowDownCircle } from "lucide-react";
 import React from "react";
 
-import { useMushroomViewModel } from "../../../src/shared/clope-mushrooms/viewmodels/useMushroomViewModel";
-import { MushroomTableView } from "../../../src/shared/clope-mushrooms/components/MushroomTableView";
-import { MushroomActionButton } from "../../../src/shared/clope-mushrooms/components/MushroomActionButton";
+import { useMushroomViewModel } from "@/src/shared/clope-mushrooms/hooks/useMushroomViewModel";
+import { MushroomTableView } from "@/src/shared/clope-mushrooms/ui/MushroomTableView";
+import { MushroomActionButton } from "@/src/shared/clope-mushrooms/ui/MushroomActionButton";
 
 export default function ClopeExample() {
     const viewModel = useMushroomViewModel();

@@ -1,19 +1,15 @@
 
 import { TransactionData } from './TransactionData';
 
-export class Cluster<Item> {
-    public readonly itemFrequencies: Map<Item, number> = new Map();
+export type FeatureID = number;
 
-    private totalItemsCount: number = 0;
+export class Cluster {
+    public readonly itemFrequencies = new Map<FeatureID, number>();
+    public totalItemsCount = 0;
+    public transactionCount = 0;
 
     get uniqueItemsCount(): number {
         return this.itemFrequencies.size;
-    }
-
-    private _transactionCount: number = 0;
-
-    get transactionCount(): number {
-        return this._transactionCount;
     }
 
     profitNumerator(repulsion: number): number {
@@ -22,13 +18,14 @@ export class Cluster<Item> {
         return g * this.transactionCount;
     }
 
-    predictedNumeratorAdding(txData: TransactionData<Item>, repulsion: number): number {
+    predictedNumeratorAdding(txData: TransactionData, repulsion: number): number {
         const newTransactionCount = this.transactionCount + 1;
-        const newTotalItems = this.totalItemsCount + txData.itemsCount;
-
+        let newTotalItems = this.totalItemsCount;
         let newUniqueCount = this.uniqueItemsCount;
-        for (const [item] of txData.frequencies) {
-            if (!this.itemFrequencies.has(item)) {
+
+        for (const [featureId, count] of txData) {
+            newTotalItems += count;
+            if (!this.itemFrequencies.has(featureId)) {
                 newUniqueCount += 1;
             }
         }
@@ -38,15 +35,18 @@ export class Cluster<Item> {
         return g * newTransactionCount;
     }
 
-    predictedNumeratorRemoving(txData: TransactionData<Item>, repulsion: number): number {
+    predictedNumeratorRemoving(txData: TransactionData, repulsion: number): number {
         if (this.transactionCount <= 1) return 0;
 
         const newTransactionCount = this.transactionCount - 1;
-        const newTotalItems = this.totalItemsCount - txData.itemsCount;
-
+        let newTotalItems = this.totalItemsCount;
         let newUniqueCount = this.uniqueItemsCount;
-        for (const [item, countToRemove] of txData.frequencies) {
-            const currentCount = this.itemFrequencies.get(item) ?? 0;
+
+        for (const [featureId, countToRemove] of txData) {
+            const currentCount = this.itemFrequencies.get(featureId) ?? 0;
+            if (currentCount === 0) continue;
+
+            newTotalItems -= countToRemove;
             if (currentCount <= countToRemove) {
                 newUniqueCount -= 1;
             }
@@ -57,29 +57,29 @@ export class Cluster<Item> {
         return g * newTransactionCount;
     }
 
-    add(txData: TransactionData<Item>): void {
-        this._transactionCount += 1;
-        this.totalItemsCount += txData.itemsCount;
+    add(txData: TransactionData): void {
+        this.transactionCount += 1;
 
-        for (const [item, count] of txData.frequencies) {
-            const currentCount = this.itemFrequencies.get(item) ?? 0;
-            this.itemFrequencies.set(item, currentCount + count);
+        for (const [featureId, count] of txData) {
+            this.totalItemsCount += count;
+            const currentCount = this.itemFrequencies.get(featureId) ?? 0;
+            this.itemFrequencies.set(featureId, currentCount + count);
         }
     }
 
-    remove(txData: TransactionData<Item>): void {
-        this._transactionCount -= 1;
+    remove(txData: TransactionData): void {
+        this.transactionCount -= 1;
 
-        this.totalItemsCount -= txData.itemsCount;
-
-        for (const [item, countToRemove] of txData.frequencies) {
-            const currentCount = this.itemFrequencies.get(item);
+        for (const [featureId, countToRemove] of txData) {
+            const currentCount = this.itemFrequencies.get(featureId);
             if (currentCount === undefined) continue;
 
+            this.totalItemsCount -= countToRemove;
+
             if (currentCount > countToRemove) {
-                this.itemFrequencies.set(item, currentCount - countToRemove);
+                this.itemFrequencies.set(featureId, currentCount - countToRemove);
             } else {
-                this.itemFrequencies.delete(item);
+                this.itemFrequencies.delete(featureId);
             }
         }
     }
