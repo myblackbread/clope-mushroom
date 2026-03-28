@@ -34,7 +34,7 @@ export abstract class MYContainerView<K extends keyof HTMLElementTagNameMap = "d
 
     protected abstract get dynamicStyle(): MYDynamicStyle<K>;
 
-    body(frame?: MYFrame): React.ReactNode {
+    makeView(frame?: MYFrame): React.ReactNode {
         const prefFrame = this.idealFrame;
         const childDynamicStyle = this.dynamicStyle;
 
@@ -93,7 +93,7 @@ export abstract class MYContainerView<K extends keyof HTMLElementTagNameMap = "d
                     key={index}
                     dynamicStyle={{ style: (prev) => ({ ...prev, ...this.getChildWrapperStyle(index) }) }}
                 >
-                    {child.body()}
+                    {child.makeView()}
                 </MYBaseView>
             );
         });

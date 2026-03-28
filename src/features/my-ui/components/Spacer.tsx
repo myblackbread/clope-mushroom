@@ -7,7 +7,7 @@ export class MYSpacer extends MYView {
     super();
   }
 
-  body(): React.ReactNode {
+  makeView(): React.ReactNode {
     return (
       <MYBaseView
         dynamicStyle={{

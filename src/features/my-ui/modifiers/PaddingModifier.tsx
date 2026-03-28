@@ -1,27 +1,22 @@
-
 import React from "react";
 import { MYViewModifier } from "../core/ViewModifier";
 import { MYBaseView } from "../components/BaseView";
 import { MYEdgeInsets } from "../types/EdgeInsets";
 import { MYPadding } from "../types/Padding";
-import { MYFrame } from "../types/Frame";
+import { MYAnyView, MYView } from "../core/View";
 
 export class MYPaddingModifier implements MYViewModifier {
     constructor(private readonly value: MYPadding) { }
 
     private isEdgeInsets(value: MYPadding): value is MYEdgeInsets {
         if (typeof value !== "object") return false;
-
         const keys = ["top", "bottom", "left", "right"] as const;
-
         const hasKey = keys.some((k) => k in value);
         if (!hasKey) return false;
-
         return keys.every((k) => !(k in value) || typeof (value as any)[k] === "number");
     }
 
     private getStyle(): React.CSSProperties | undefined {
-
         if (this.isEdgeInsets(this.value)) {
             const { top, bottom, left, right } = this.value;
             return {
@@ -57,24 +52,28 @@ export class MYPaddingModifier implements MYViewModifier {
         }
     }
 
-    body(content: React.ReactNode, frame?: MYFrame): React.ReactNode {
+    body(content: MYView): MYView {
         const style = this.getStyle();
 
-        if (!style) return content;
+        return new MYAnyView((parentFrame) => {
+            if (!style) return content.makeView(parentFrame);
 
-        return (
-            <MYBaseView
-                frame={frame}
-                dynamicStyle={{
-                    style: (prev) => ({
-                        ...prev,
-                        ...style,
-                        pointerEvents: "none"
-                    })
-                }}
-            >
-                {content}
-            </MYBaseView>
-        );
+            const mergedFrame = { ...content.idealFrame, ...parentFrame };
+
+            return (
+                <MYBaseView
+                    frame={mergedFrame}
+                    dynamicStyle={{
+                        style: (prev) => ({
+                            ...prev,
+                            ...style,
+                            pointerEvents: "none"
+                        })
+                    }}
+                >
+                    {content.makeView(parentFrame)}
+                </MYBaseView>
+            );
+        });
     }
 }

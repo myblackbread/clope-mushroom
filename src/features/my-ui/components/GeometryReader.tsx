@@ -2,7 +2,6 @@
 import React, { useRef, useState } from "react";
 import { MYView } from "../core/View";
 import { MYBaseView } from "./BaseView";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYFrame } from "../types/Frame";
 import { MYGeometryProxy } from "../types/GeometryProxy";
 import { MYSize } from "../types/Size";
@@ -50,7 +49,7 @@ const GeometryReaderInner: React.FC<{
                 })
             }}
         >
-            {childView.body()}
+            {childView.makeView()}
         </MYBaseView>
     );
 };
@@ -60,7 +59,7 @@ export class MYGeometryReader extends MYView {
         super();
     }
 
-    body(frame?: MYFrame): React.ReactNode {
+    makeView(frame?: MYFrame): React.ReactNode {
         return <GeometryReaderInner content={this.content} frame={frame} />;
     }
 

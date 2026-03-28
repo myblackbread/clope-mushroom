@@ -1,8 +1,8 @@
-import React from "react";
 import { MYViewModifier } from "../core/ViewModifier";
 import { MYBaseView } from "../components/BaseView";
 import { MYFrame } from "../types/Frame";
 import { AlignmentMap } from "../types/Alignment";
+import { MYAnyView, MYView } from "../core/View";
 
 function mergeFrames(oldFrame: MYFrame = {}, newFrame: MYFrame = {}): MYFrame {
   const merged = { ...oldFrame, ...newFrame };
@@ -23,23 +23,28 @@ function mergeFrames(oldFrame: MYFrame = {}, newFrame: MYFrame = {}): MYFrame {
 export class MYFrameModifier implements MYViewModifier {
   constructor(private readonly value: MYFrame) { }
 
-  body(content: React.ReactNode, frame?: MYFrame): React.ReactNode {
-    const alignStyles = this.value.alignment ? AlignmentMap[this.value.alignment] : {};
+  body(content: MYView): MYView {
+    const alignValue = this.value.alignment || "center";
+    const alignStyles = AlignmentMap[alignValue];
 
-    return (
-      <MYBaseView
-        frame={{ ...frame, ...this.value }}
-        dynamicStyle={{
-          style: (prev) => ({
-            ...prev,
-            ...alignStyles,
-            pointerEvents: "none"
-          })
-        }}
-      >
-        {content}
-      </MYBaseView>
-    );
+    return new MYAnyView((parentFrame) => {
+      const mergedFrame = { ...content.idealFrame, ...parentFrame, ...this.value };
+      
+      return (
+        <MYBaseView
+          frame={mergedFrame}
+          dynamicStyle={{
+            style: (prev) => ({
+              ...prev,
+              ...alignStyles,
+              pointerEvents: "none"
+            })
+          }}
+        >
+          {content.makeView(parentFrame)}
+        </MYBaseView>
+      );
+    });
   }
 
   sizeThatFits(contentFrame: MYFrame): MYFrame {

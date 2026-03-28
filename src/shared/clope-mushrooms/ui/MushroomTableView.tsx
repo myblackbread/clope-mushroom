@@ -9,17 +9,17 @@ interface MushroomTableViewProps {
     bottomPadding: number;
 }
 
-export const MushroomTableView: React.FC<MushroomTableViewProps> = ({ 
-    clustersInfo, 
-    isDataLoaded, 
-    isFetching, 
-    bottomPadding 
+export const MushroomTableView: React.FC<MushroomTableViewProps> = ({
+    clustersInfo,
+    isDataLoaded,
+    isFetching,
+    bottomPadding
 }) => {
-    const renderHeader = (text: string) => 
+    const renderHeader = (text: string) =>
         new MYText(text)
             .fontWeight("semibold")
             .foregroundStyle(MYColor.rgb(107, 114, 128))
-            .body();
+            .makeView();
 
     const cellStyle: React.CSSProperties = { padding: "16px 20px", borderBottom: "1px solid #f3f4f6" };
     const headerStyle: React.CSSProperties = { padding: "16px 20px", textAlign: "left" };
@@ -55,19 +55,19 @@ export const MushroomTableView: React.FC<MushroomTableViewProps> = ({
                                 <td style={cellStyle}>
                                     {new MYText(cluster.size.toString())
                                         .fontWeight("bold")
-                                        .body()}
+                                        .makeView()}
                                 </td>
                                 <td style={cellStyle}>
                                     {new MYText(cluster.edibleCount.toString())
                                         .fontWeight("medium")
                                         .foregroundStyle(MYColor.rgb(16, 185, 129))
-                                        .body()}
+                                        .makeView()}
                                 </td>
                                 <td style={cellStyle}>
                                     {new MYText(cluster.poisonousCount.toString())
                                         .fontWeight("medium")
                                         .foregroundStyle(MYColor.rgb(239, 68, 68))
-                                        .body()}
+                                        .makeView()}
                                 </td>
                                 <td style={cellStyle}>
                                     {new MYText(`${cluster.purity.toFixed(1)}%`)
@@ -77,31 +77,25 @@ export const MushroomTableView: React.FC<MushroomTableViewProps> = ({
                                         .padding({ edges: "vertical", length: 4 })
                                         .background(cluster.purity > 90 ? MYColor.rgb(209, 250, 229) : MYColor.rgb(254, 226, 226))
                                         .clipShape(new MYRoundedRectangle(6))
-                                        .body()}
+                                        .makeView()}
                                 </td>
                                 <td style={cellStyle}>
-                                    {new MYText(cluster.dominantType).body()}
+                                    {new MYText(cluster.dominantType).makeView()}
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             ) : (
-                <div style={{
-                    display: "flex",
-                    height: "100%",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginTop: "60px"
-                }}>
-                    {new MYText(isDataLoaded && !isFetching 
-                            ? "Данные загружены. Запустите Фазу 1." 
-                            : "Нет данных для отображения")
-                        .font({ size: 18 })
-                        .fontWeight("medium")
-                        .foregroundStyle(MYColor.rgb(156, 163, 175))
-                        .body()}
-                </div>
+                new MYText(isDataLoaded && !isFetching
+                    ? "Данные загружены. Запустите Фазу 1."
+                    : "Нет данных для отображения")
+                    .font({ size: 18 })
+                    .fontWeight("medium")
+                    .foregroundStyle(MYColor.rgb(156, 163, 175))
+                    .padding({ edges: "top", length: 60 })
+                    .frame({ maxWidth: Infinity, maxHeight: Infinity })
+                    .makeView()
             )}
         </div>
     );

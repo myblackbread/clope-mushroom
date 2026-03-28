@@ -3,17 +3,17 @@ import { MYDynamicStyle } from "../types/DynamicStyle";
 import { MYBaseViewProps } from "../types/BaseViewProps";
 import { frameToStyle } from "../utils/frameToStyle";
 import { MYComponentProps } from "../types/ComponentProps";
-import { useMYRenderContext } from "../context/RenderContextReact";
+import { MYRenderContextReact } from "../context/RenderContextReact";
 
 const BASE_STYLES: React.CSSProperties = {
   display: "flex",
   position: "relative",
-  width: "fit-content",
-  height: "fit-content",
   pointerEvents: "auto",
-  justifyContent: "center",
   alignItems: "center",
   isolation: "isolate",
+  flexShrink: 1,
+  width: "fit-content",
+  height: "fit-content",
 };
 
 const BaseViewRender = <K extends keyof HTMLElementTagNameMap = "div">(
@@ -23,7 +23,7 @@ const BaseViewRender = <K extends keyof HTMLElementTagNameMap = "div">(
   const { element, frame, dynamicStyle, children } = props;
   const component = (element || "div") as string;
 
-  const renderContext = useMYRenderContext();
+  const renderContext = React.useContext(MYRenderContextReact);
 
   const transitionStyle = renderContext?.animation
     ? { transition: `all ${renderContext.animation.duration}s ${renderContext.animation.timingCurve}` }

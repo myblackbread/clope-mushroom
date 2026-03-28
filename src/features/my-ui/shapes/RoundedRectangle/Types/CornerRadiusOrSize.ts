@@ -1,4 +1,4 @@
-import { MYSize } from "@/my-ui/types/Size";
+import { MYSize } from "../../../types/Size";
 
 export type MYCornerRadiusOrSize =
     | number

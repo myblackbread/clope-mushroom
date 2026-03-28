@@ -3,7 +3,7 @@ import { MYAnyView, MYView } from "../core/View";
 import { MYBaseView } from "./BaseView";
 import { MYBinding } from "../types/Binding";
 import { MYFrame } from "../types/Frame";
-import { useMYRenderContext } from "../context/RenderContextReact";
+import { MYRenderContextReact } from "../context/RenderContextReact";
 
 const SliderInner: React.FC<{
     frame?: MYFrame;
@@ -11,7 +11,7 @@ const SliderInner: React.FC<{
     range: [number, number];
     step?: number;
 }> = ({ frame, binding, range, step }) => {
-    const context = useMYRenderContext();
+    const context = React.useContext(MYRenderContextReact);
     const isDisabled = context?.disabled === true;
 
     const sliderBase = new MYAnyView(
@@ -43,7 +43,7 @@ const SliderInner: React.FC<{
     return sliderBase
         .frame({ maxWidth: Infinity })
         .opacity(isDisabled ? 0.5 : 1)
-        .body(frame);
+        .makeView(frame);
 };
 
 export class MYSlider extends MYView {
@@ -55,7 +55,7 @@ export class MYSlider extends MYView {
         super();
     }
 
-    body(frame?: MYFrame): React.ReactNode {
+    makeView(frame?: MYFrame): React.ReactNode {
         return (
             <SliderInner
                 frame={frame}

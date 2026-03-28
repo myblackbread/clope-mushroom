@@ -25,11 +25,11 @@ export class MYZStack extends MYContainerView<"div"> {
 
     protected get dynamicStyle(): MYDynamicStyle<"div"> {
         return {
-            style: (prev) => ({
+            style: prev => ({
                 ...prev,
                 display: "grid",
-                gridTemplateColumns: "1fr",
-                gridTemplateRows: "1fr",
+                gridTemplateColumns: "minmax(0, 1fr)",
+                gridTemplateRows: "minmax(0, 1fr)",
             })
         };
     }

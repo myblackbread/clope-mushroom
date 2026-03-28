@@ -30,10 +30,22 @@ import { MYDisabledModifier } from "../modifiers/DisabledModifier";
 import { MYContextWrapper } from "./ContextWrapper";
 
 export abstract class MYView {
-  abstract body(frame?: MYFrame): React.ReactNode;
+  body(): MYView {
+    return this;
+  }
+
+  makeView(frame?: MYFrame): React.ReactNode {
+    const b = this.body();
+    if (b === this) {
+      throw new Error("Primitive views must override makeView()");
+    }
+    return b.makeView(frame);
+  }
 
   get idealFrame(): MYFrame {
-    return {};
+    const b = this.body();
+    if (b === this) return {};
+    return b.idealFrame;
   }
 
   get isSpacer(): boolean {
@@ -136,22 +148,22 @@ class MYModifiedContent extends MYView {
     super();
   }
 
-  body(frame?: MYFrame): React.ReactNode {
-    let childNode = this.content.body(frame);
+  makeView(frame?: MYFrame): React.ReactNode {
+    const viewToRender = this.modifierRule.body
+      ? this.modifierRule.body(this.content)
+      : this.content;
 
-    if (this.modifierRule.body) {
-      childNode = this.modifierRule.body(childNode, this.idealFrame);
-    }
+    let childNode = viewToRender.makeView(frame);
 
     if (this.modifierRule.transformContext) {
       return (
-        <MYContextWrapper transform={this.modifierRule.transformContext.bind(this.modifierRule)} >
+        <MYContextWrapper transform={this.modifierRule.transformContext.bind(this.modifierRule)}>
           {childNode}
         </MYContextWrapper>
       );
-    } else {
-      return childNode;
     }
+
+    return childNode;
   }
 
   get viewId(): string | number | undefined {
@@ -173,15 +185,16 @@ class MYModifiedContent extends MYView {
 }
 
 export class MYAnyView extends MYView {
-  constructor(private readonly node: React.ReactNode) {
-    super()
+  constructor(
+    private readonly content: React.ReactNode | ((frame?: MYFrame) => React.ReactNode)
+  ) {
+    super();
   }
 
-  body(): React.ReactNode {
-    return this.node;
-  }
-
-  get idealFrame(): MYFrame {
-    return {};
+  makeView(frame?: MYFrame): React.ReactNode {
+    if (typeof this.content === 'function') {
+      return this.content(frame);
+    }
+    return this.content;
   }
 }

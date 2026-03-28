@@ -5,10 +5,11 @@ import { MYSize } from "../types/Size";
 import { useIsomorphicLayoutEffect } from "../hooks/useIsomorphicLayoutEffect";
 import { MYBaseView } from "../components/BaseView";
 import { MYFrame } from "../types/Frame";
+import { MYAnyView, MYView } from "../core/View";
 
-const ClipShapeWrapper: React.FC<{ 
+const ClipShapeWrapper: React.FC<{
   frame?: MYFrame;
-  shape: MYShape; 
+  shape: MYShape;
   children: React.ReactNode;
 }> = ({ frame, shape, children }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -30,7 +31,7 @@ const ClipShapeWrapper: React.FC<{
   }, []);
 
   const clipPathValue = size.width > 0 && size.height > 0
-    ? `path('${shape.path(size)}')` 
+    ? `path('${shape.path(size)}')`
     : "none";
 
   return (
@@ -39,10 +40,10 @@ const ClipShapeWrapper: React.FC<{
       frame={frame}
       dynamicStyle={{
         style: (prev) => ({
-            ...prev,
-            clipPath: clipPathValue,
-            WebkitClipPath: clipPathValue, 
-            pointerEvents: "none"
+          ...prev,
+          clipPath: clipPathValue,
+          WebkitClipPath: clipPathValue,
+          pointerEvents: "none"
         })
       }}
     >
@@ -52,9 +53,17 @@ const ClipShapeWrapper: React.FC<{
 };
 
 export class MYClipShapeModifier implements MYViewModifier {
-  constructor(private readonly shape: MYShape) {}
+  constructor(private readonly shape: MYShape) { }
 
-  body(content: React.ReactNode, frame?: MYFrame): React.ReactNode {
-    return <ClipShapeWrapper frame={frame} shape={this.shape}>{content}</ClipShapeWrapper>;
+  body(content: MYView): MYView {
+    return new MYAnyView((parentFrame) => {
+      const mergedFrame = { ...content.idealFrame, ...parentFrame };
+
+      return (
+        <ClipShapeWrapper frame={mergedFrame} shape={this.shape}>
+          {content.makeView(parentFrame)}
+        </ClipShapeWrapper>
+      );
+    });
   }
 }

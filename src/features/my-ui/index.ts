@@ -23,6 +23,7 @@ export * from "./components/Toggle";
 // ==========================================
 // Stacks
 // ==========================================
+export * from "./stacks/Grid";
 export * from "./stacks/HStack";
 export * from "./stacks/VStack";
 export * from "./stacks/ZStack";
@@ -95,3 +96,8 @@ export * from "./types/ScaleEffect";
 export * from "./types/Size";
 export * from "./types/UnitPoint";
 export * from "./types/VerticalAlignment";
+
+// ==========================================
+// Types
+// ==========================================
+export * from "./core/Window";

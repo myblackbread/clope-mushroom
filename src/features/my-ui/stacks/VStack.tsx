@@ -44,6 +44,7 @@ export class MYVStack extends MYContainerView<"div"> {
                 display: "flex",
                 flexDirection: "column",
                 gap: this.spacing,
+                justifyContent: "center",
                 alignItems: this.getAlignItems()
             })
         };

@@ -46,6 +46,7 @@ export class MYHStack extends MYContainerView<"div"> {
                 display: "flex",
                 flexDirection: "row",
                 gap: this.spacing,
+                justifyContent: "flex-center",
                 alignItems: this.getAlignItems()
             })
         };

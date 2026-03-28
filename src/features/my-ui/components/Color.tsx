@@ -19,15 +19,14 @@ export class MYColor extends MYView {
         return new MYColor(`rgba(${r}, ${g}, ${b}, ${a})`);
     }
 
-    body(): React.ReactNode {
+    makeView(): React.ReactNode {
         return (
             <MYBaseView
+                frame={this.idealFrame}
                 dynamicStyle={{
-                    style: (prev) => ({
+                    style: prev => ({
                         ...prev,
                         backgroundColor: this.rawValue,
-                        width: "100%",
-                        height: "100%",
                         minWidth: 0,
                         minHeight: 0,
                         pointerEvents: this.rawValue === "transparent" ? "none" : undefined

@@ -8,7 +8,7 @@ export class MYImage extends MYView {
         super();
     }
 
-    body(frame?: MYFrame): React.ReactNode {
+    makeView(frame?: MYFrame): React.ReactNode {
         if (typeof this.source === "string") {
             return (
                 <MYBaseView

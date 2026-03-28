@@ -4,7 +4,7 @@ import { MYBaseView } from "../components/BaseView";
 import { MYScaleEffect } from "../types/ScaleEffect";
 import { MYSize } from "../types/Size";
 import { MYUnitPoint, unitPointMap } from "../types/UnitPoint";
-import { MYFrame } from "../types/Frame";
+import { MYAnyView, MYView } from "../core/View";
 
 export class MYScaleEffectModifier implements MYViewModifier {
     constructor(private readonly value: MYScaleEffect) { }
@@ -49,25 +49,29 @@ export class MYScaleEffectModifier implements MYViewModifier {
         };
     }
 
-    body(content: React.ReactNode, frame?: MYFrame): React.ReactNode {
+    body(content: MYView): MYView {
         const style = this.getStyle();
 
-        if (!style) return content;
+        return new MYAnyView((parentFrame) => {
+            if (!style.transform) return content.makeView(parentFrame);
 
-        return (
-            <MYBaseView
-                frame={frame}
-                dynamicStyle={{
-                    style: (prev) => ({
-                        ...prev,
-                        ...style,
-                        pointerEvents: "none"
-                    })
-                }}
-            >
-                {content}
-            </MYBaseView>
-        );
+            const mergedFrame = { ...content.idealFrame, ...parentFrame };
+
+            return (
+                <MYBaseView
+                    frame={mergedFrame}
+                    dynamicStyle={{
+                        style: (prev) => ({
+                            ...prev,
+                            ...style,
+                            pointerEvents: "none"
+                        })
+                    }}
+                >
+                    {content.makeView(parentFrame)}
+                </MYBaseView>
+            );
+        });
     }
 
     private isScaleS(val: any): val is { s: number; anchor?: MYUnitPoint } {

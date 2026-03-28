@@ -2,12 +2,12 @@ import { isSize } from "../types/Size";
 import { MYViewModifier } from "../core/ViewModifier";
 import { MYBaseView } from "../components/BaseView";
 import { MYOffset } from "../types/Offset";
-import { MYFrame } from "../types/Frame"
+import { MYAnyView, MYView } from "../core/View";
 
 export class MYOffsetModifier implements MYViewModifier {
     constructor(private readonly value: MYOffset) { }
 
-    body(content: React.ReactNode, frame?: MYFrame): React.ReactNode {
+    body(content: MYView): MYView {
         let x: number | undefined;
         let y: number | undefined;
 
@@ -23,7 +23,6 @@ export class MYOffsetModifier implements MYViewModifier {
         }
 
         let translate: string | undefined;
-
         if (x !== undefined && y !== undefined) {
             translate = `translate(${x}px, ${y}px)`;
         } else if (x !== undefined) {
@@ -32,19 +31,27 @@ export class MYOffsetModifier implements MYViewModifier {
             translate = `translateY(${y}px)`;
         }
 
-        return (
-            <MYBaseView
-                frame={frame}
-                dynamicStyle={{
-                    style: (prev) => ({
-                        ...prev,
-                        transform: translate,
-                        pointerEvents: "none"
-                    })
-                }}
-            >
-                {content}
-            </MYBaseView>
-        );
+        return new MYAnyView((parentFrame) => {
+            if (!translate) {
+                return content.makeView(parentFrame);
+            }
+
+            const mergedFrame = { ...content.idealFrame, ...parentFrame };
+
+            return (
+                <MYBaseView
+                    frame={mergedFrame}
+                    dynamicStyle={{
+                        style: (prev) => ({
+                            ...prev,
+                            transform: translate,
+                            pointerEvents: "none"
+                        })
+                    }}
+                >
+                    {content.makeView(parentFrame)}
+                </MYBaseView>
+            );
+        });
     }
 }

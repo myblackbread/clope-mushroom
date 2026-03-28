@@ -1,6 +1,7 @@
 import React from "react";
 import { MYViewModifier } from "../core/ViewModifier";
 import { useLatestCallback } from "../hooks/useLatestCallback";
+import { MYAnyView, MYView } from "../core/View";
 
 interface MYOnChangeProps<T> {
   value: T;
@@ -38,16 +39,15 @@ export class MYOnChangeModifier<T> implements MYViewModifier {
     private readonly initial: boolean = false
   ) { }
 
-  body(content: React.ReactNode): React.ReactNode {
-    return (
+  body(content: MYView): MYView {
+    return new MYAnyView((parentFrame) => (
       <MYOnChangeWrapper
         value={this.value}
         action={this.action}
         initial={this.initial}
       >
-        {content}
+        {content.makeView(parentFrame)}
       </MYOnChangeWrapper>
-    );
+    ));
   }
 }
-

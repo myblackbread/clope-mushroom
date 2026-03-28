@@ -1,9 +1,10 @@
 import React from "react";
 import { MYFrame } from "../types/Frame";
 import { MYRenderContext } from "../types/RenderContext";
+import { MYView } from "./View";
 
 export interface MYViewModifier {
-  body?(content: React.ReactNode, frame?: MYFrame): React.ReactNode;
+  body?(content: MYView): MYView;
 
   sizeThatFits?(contentFrame: MYFrame): MYFrame;
 

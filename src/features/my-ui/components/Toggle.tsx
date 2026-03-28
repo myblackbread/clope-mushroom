@@ -5,12 +5,12 @@ import { MYBinding } from "../types/Binding";
 import { MYFrame } from "../types/Frame";
 import { MYHStack } from "../stacks/HStack";
 import { MYSpacer } from "./Spacer";
-import { useMYRenderContext } from "../context/RenderContextReact";
+import { MYRenderContextReact } from "../context/RenderContextReact";
 
 const ToggleSwitch: React.FC<{
     binding: MYBinding<boolean>;
 }> = ({ binding }) => {
-    const context = useMYRenderContext();
+    const context = React.useContext(MYRenderContextReact);
     const isDisabled = context?.disabled === true;
 
     return (
@@ -43,7 +43,7 @@ const ToggleInner: React.FC<{
     label: MYView;
     frame?: MYFrame;
 }> = ({ isOn, label, frame }) => {
-    const context = useMYRenderContext();
+    const context = React.useContext(MYRenderContextReact);
     const isDisabled = context?.disabled === true;
 
     const toggleLayout = new MYHStack([
@@ -54,7 +54,7 @@ const ToggleInner: React.FC<{
 
     return toggleLayout
         .opacity(isDisabled ? 0.5 : 1)
-        .body(frame);
+        .makeView(frame);
 };
 
 export class MYToggle extends MYView {
@@ -65,7 +65,7 @@ export class MYToggle extends MYView {
         super();
     }
 
-    body(frame?: MYFrame): React.ReactNode {
+    makeView(frame?: MYFrame): React.ReactNode {
         return (
             <ToggleInner
                 isOn={this.isOn}

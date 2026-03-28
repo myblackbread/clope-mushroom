@@ -1,6 +1,5 @@
 import React from "react";
 import { MYFrame } from "../types/Frame";
-import { AlignmentMap } from "../types/Alignment";
 
 function normalizeDimension(value?: number | string): number | string | undefined {
     if (value === undefined) return undefined;
@@ -17,7 +16,7 @@ function normalizeDimension(value?: number | string): number | string | undefine
 export function frameToStyle(frame?: MYFrame): React.CSSProperties {
     if (!frame) return {};
 
-    const { alignment = "center", ...dimensions } = frame;
+    const { alignment, ...dimensions } = frame;
 
     const sizeStyle: React.CSSProperties = Object.fromEntries(
         Object.entries(dimensions)
@@ -25,12 +24,21 @@ export function frameToStyle(frame?: MYFrame): React.CSSProperties {
             .filter(([key, normalized]) => normalized !== undefined)
     );
 
+    const isFullWidth = dimensions.maxWidth === Infinity;
+    const isFullHeight = dimensions.maxHeight === Infinity;
+
     return {
-        ...(dimensions.maxWidth === Infinity || normalizeDimension(dimensions.maxWidth) !== undefined ? { width: "100%" } : undefined),
-        ...(dimensions.maxHeight === Infinity || normalizeDimension(dimensions.maxHeight) !== undefined ? { height: "100%" } : undefined),
         ...sizeStyle,
-        ...AlignmentMap[alignment],
-        ...(dimensions.maxWidth === Infinity ? { maxWidth: undefined } : undefined),
-        ...(dimensions.maxHeight === Infinity ? { maxHeight: undefined } : undefined),
+
+        ...(isFullWidth ? {
+            width: "100%",
+        } : {}),
+
+        ...(isFullHeight ? {
+            height: "100%",
+        } : {}),
+
+        ...(isFullWidth ? { maxWidth: undefined } : {}),
+        ...(isFullHeight ? { maxHeight: undefined } : {}),
     };
 }

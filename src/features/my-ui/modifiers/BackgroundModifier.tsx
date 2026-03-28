@@ -22,7 +22,7 @@ export class MYBackgroundModifier implements MYViewModifier {
         }
 
         if (this.background instanceof MYView) {
-            return this.background.body(frame);
+            return this.background.makeView(frame);
         }
 
         const { url, repeat, position, size } = this.background;
@@ -40,24 +40,28 @@ export class MYBackgroundModifier implements MYViewModifier {
         );
     }
 
-    body(content: React.ReactNode, frame?: MYFrame): React.ReactNode {
-        return (
-            <MYBaseView
-                frame={frame}
-            >
-                <div style={{
-                    position: "absolute",
-                    inset: 0,
-                    overflow: "hidden",
-                    display: "flex",
-                    pointerEvents: "none"
-                }}>
-                    {new MYAnyView(this.renderBackground(frame))
-                        .frame({ maxWidth: Infinity, maxHeight: Infinity })
-                        .body(frame)}
-                </div>
-                {content}
-            </MYBaseView>
-        );
+    body(content: MYView): MYView {
+        return new MYAnyView((parentFrame) => {
+            const mergedFrame = { ...content.idealFrame, ...parentFrame };
+
+            return (
+                <MYBaseView frame={mergedFrame}>
+                    <div style={{
+                        position: "absolute",
+                        inset: 0,
+                        overflow: "hidden",
+                        display: "flex",
+                        pointerEvents: "none",
+                        zIndex: -1
+                    }}>
+                        {new MYAnyView(this.renderBackground(parentFrame))
+                            .frame({ maxWidth: Infinity, maxHeight: Infinity })
+                            .makeView(parentFrame)}
+                    </div>
+
+                    {content.makeView(parentFrame)}
+                </MYBaseView>
+            );
+        });
     }
 }

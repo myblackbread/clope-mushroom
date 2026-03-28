@@ -3,14 +3,14 @@ import { MYView, MYAnyView } from "../core/View";
 import { MYBaseView } from "./BaseView";
 import { MYColor } from "./Color";
 import { MYFrame } from "../types/Frame";
-import { useMYRenderContext } from "../context/RenderContextReact";
+import { MYRenderContextReact } from "../context/RenderContextReact";
 
 const ButtonInner: React.FC<{
     frame?: MYFrame;
     action: () => void;
     children: MYView;
 }> = ({ frame, action, children }) => {
-    const context = useMYRenderContext();
+    const context = React.useContext(MYRenderContextReact);
 
     const [isPressed, setIsPressed] = React.useState(false);
     const isPressedRef = React.useRef(false);
@@ -65,12 +65,12 @@ const ButtonInner: React.FC<{
         />
     );
 
-    return new MYAnyView(children.body(frame))
+    return new MYAnyView(children.makeView(frame))
         .frame(children.idealFrame)
         .overlay(pressOverlay)
         .overlay(hitTestLayer)
         .opacity(isDisabled ? 0.5 : 1)
-        .body(frame);
+        .makeView(frame);
 };
 
 export class MYButton extends MYView {
@@ -81,14 +81,12 @@ export class MYButton extends MYView {
         super();
     }
 
-    body(frame?: MYFrame): React.ReactNode {
-        return (
-            <ButtonInner
-                frame={frame}
-                action={this.action}
-                children={this.label}
-            />
-        );
+    makeView(frame?: MYFrame): React.ReactNode {
+        return <ButtonInner
+            frame={frame}
+            action={this.action}
+            children={this.label}
+        />;
     }
 
     get idealFrame(): MYFrame {
