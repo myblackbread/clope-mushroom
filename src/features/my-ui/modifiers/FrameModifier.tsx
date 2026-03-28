@@ -28,7 +28,8 @@ export class MYFrameModifier implements MYViewModifier {
     const alignStyles = AlignmentMap[alignValue];
 
     return new MYAnyView((parentFrame) => {
-      const mergedFrame = { ...content.idealFrame, ...parentFrame, ...this.value };
+      const baseFrame = mergeFrames(content.idealFrame, parentFrame);
+      const mergedFrame = mergeFrames(baseFrame, this.value);
       
       return (
         <MYBaseView
