@@ -1,6 +1,6 @@
 import React from "react";
 import { MYViewModifier } from "../core/ViewModifier";
-import { MYBaseView } from "../components/BaseView";
+import { MYBaseView } from "../react-bridge/BaseView";
 import { MYScaleEffect } from "../types/ScaleEffect";
 import { MYSize } from "../types/Size";
 import { MYUnitPoint, unitPointMap } from "../types/UnitPoint";

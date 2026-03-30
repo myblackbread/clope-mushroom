@@ -1,3 +1,3 @@
-import { MYColor } from "../components/Color";
+import { MYColor } from "../views/Color";
 
 export type MYColorType = string | MYColor;

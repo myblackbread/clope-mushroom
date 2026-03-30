@@ -1,16 +1,15 @@
-import { MYView, MYText, MYColor } from "@/src/shared/my-ui";
+import MY from "@/src/shared/my-ui";
 import { MYTableCellModifier } from "./TableCellModifier";
 
-export class MushroomTableHeaderCell extends MYView {
+export class MushroomTableHeaderCell extends MY.View {
     constructor(private readonly text: string) {
         super();
     }
 
-    body(): MYView {
-        return new MYText(this.text)
+    body(): MY.View {
+        return new MY.Text(this.text)
             .fontWeight("semibold")
-            .foregroundStyle(MYColor.rgb(107, 114, 128))
+            .foregroundStyle(MY.Color.rgb(107, 114, 128))
             .modifier(new MYTableCellModifier())
-            .background(MYColor.rgb(249, 250, 251)); 
     }
 }

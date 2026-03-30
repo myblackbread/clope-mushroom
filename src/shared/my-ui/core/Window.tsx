@@ -1,6 +1,6 @@
 import React from "react";
 import { MYView } from "./View";
-import { MYBaseView } from "../components/BaseView";
+import { MYBaseView } from "../react-bridge/BaseView";
 
 export class MYWindow {
     constructor(private readonly mainContent: MYView, private readonly hudLayer?: MYView) { }
@@ -9,19 +9,18 @@ export class MYWindow {
         return (
             <div style={{
                 display: "grid",
-                minWidth: "100vw",
-                minHeight: "100vh",
-                gridTemplateColumns: "1fr",
-                gridTemplateRows: "1fr",
+                minWidth: "100dvw",
+                minHeight: "100dvh",
             }}>
                 <MYBaseView
                     frame={{ maxWidth: Infinity, maxHeight: Infinity }}
                     dynamicStyle={{
                         style: prev => ({
                             ...prev,
-                            gridColumn: 1,
-                            gridRow: 1,
-                            flexDirection: "column",
+                            gridColumn: "1 / -1",
+                            gridRow: "1 / -1",
+                            alignItems: "flex-start",
+                            justifyContent: "flex-start",
                         })
                     }}
                 >

@@ -1,8 +1,7 @@
-
 import React from "react";
 import { MYViewModifier } from "../core/ViewModifier";
 import { MYRenderContext } from "../types/RenderContext";
-import { MYContextWrapper } from "../core/ContextWrapper";
+import { MYContextWrapper } from "../react-bridge/ContextWrapper";
 import { MYFontWeight } from "../types/Font";
 
 export class MYFontWeightModifier implements MYViewModifier {

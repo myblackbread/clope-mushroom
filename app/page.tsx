@@ -1,9 +1,11 @@
 "use client";
-import { MYCapsule, MYColor, MYScrollView, MYText, MYVStack, MYWindow, MYZStack } from "@/src/shared/my-ui";
+
+import React from "react";
+import { RenderMYView } from "@/src/shared/my-ui";
 import { ClopeDashboard } from "@/src/widgets/clope-dashboard";
-import { MYForEach } from "@/src/shared/my-ui/components/ForEach";
 
 export default function Test() {
+    const dashboard = React.useMemo(() => new ClopeDashboard(), []);
 
-    return <ClopeDashboard />
+    return <RenderMYView view={dashboard} />;
 }

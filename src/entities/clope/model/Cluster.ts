@@ -1,4 +1,3 @@
-
 import { TransactionData } from '../../mushroom/model/TransactionData';
 
 export type FeatureID = number;

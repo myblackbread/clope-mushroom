@@ -1,77 +1,72 @@
-import { MYView, MYVStack, MYHStack, MYZStack, MYText, MYSpacer, MYSlider, MYColor, MYRoundedRectangle, MYImage, MYFrame } from "@/src/shared/my-ui";
-import { ArrowDownCircle } from "lucide-react";
+import MY from "@/src/shared/my-ui";
 import { MushroomActionButton } from "./MushroomActionButton";
+import { ArrowDownCircle } from "lucide-react";
+import { MushroomViewModel } from "../model/MushroomViewModel";
 
-export class MushroomControlForm extends MYView {
-    constructor(private readonly viewModel: any) {
+export class MushroomControlForm extends MY.View {
+    constructor(private readonly viewModel: MushroomViewModel) {
         super();
     }
 
-    body(): MYView {
-        const isBusy =  this.viewModel.isFetching || this.viewModel.isCalculating;
+    body(): MY.View {
+        const isFetching = this.viewModel.isFetching.wrappedValue;
+        const isCalculating = this.viewModel.isCalculating.wrappedValue;
+        const isDataLoaded = this.viewModel.isDataLoaded.wrappedValue;
+        const isPhaseOneCompleted = this.viewModel.isPhaseOneCompleted.wrappedValue;
+        const currentProfit = this.viewModel.currentProfit.wrappedValue;
+        const clustersCount = this.viewModel.clustersInfo.wrappedValue.length;
+        const repulsion = this.viewModel.repulsion.wrappedValue;
+
+        const isBusy = isFetching || isCalculating;
         const spacing = 16.0;
 
-        return new MYVStack([
-            // Плашка с профитом
-            this.viewModel.currentProfit && new MYHStack([
-                new MYText(`Профит: ${this.viewModel.currentProfit.toFixed(3)}`).foregroundStyle("white"),
-                new MYSpacer(),
-                new MYText(`Кластеров: ${this.viewModel.clustersInfo.length}`).foregroundStyle("white")
+        return new MY.VStack([
+            currentProfit !== null ? new MY.HStack([
+                new MY.Text(`Профит: ${currentProfit.toFixed(3)}`).foregroundStyle("white"),
+                new MY.Spacer(),
+                new MY.Text(`Кластеров: ${clustersCount}`).foregroundStyle("white")
             ])
                 .font("headline")
                 .padding({ edges: "horizontal", length: 20 })
                 .padding({ edges: "vertical", length: 16 })
-                .background(MYColor.rgb(16, 185, 129))
-                .clipShape(new MYRoundedRectangle(16))
-                .animation(),
+                .background(MY.Color.rgb(16, 185, 129))
+                .clipShape(new MY.RoundedRectangle(16))
+                .animation() : undefined,
 
-            // Блок с ползунком и кнопками
-            new MYVStack([
-                new MYVStack([
-                    new MYZStack([
-                        new MYText("REPULSION (Отталкивание)")
-                            .font("subheadline")
-                            .foregroundStyle(MYColor.rgb(107, 114, 128)),
-                        new MYHStack([
-                            new MYSpacer(),
-                            new MYText(`${this.viewModel.repulsion.wrappedValue.toFixed(1)}`)
-                                .font("headline")
-                                .frame({ alignment: "right" })
+            new MY.VStack([
+                new MY.VStack([
+                    new MY.ZStack([
+                        new MY.Text("REPULSION (Отталкивание)"),
+                        new MY.HStack([
+                            new MY.Spacer(),
+                            new MY.Text(`${repulsion.toFixed(1)}`)
                         ])
                     ]),
-                    new MYSlider(this.viewModel.repulsion, [1.0, 4.0], 0.1)
+                    new MY.Slider(this.viewModel.repulsion.projectedValue, [1.0, 4.0], 0.1)
                         .disabled(isBusy)
+                        .onChange(repulsion, () => this.viewModel.resetClusteringState())
                 ], 12),
 
-                new MYZStack([
-                    !this.viewModel.isDataLoaded
+                new MY.ZStack([
+                    !isDataLoaded
                         ? new MushroomActionButton(
-                            this.viewModel.isFetching ? "Идет загрузка..." : "Скачать данные",
+                            isFetching ? "Идет загрузка..." : "Скачать данные",
                             () => this.viewModel.loadData(),
-                            MYColor.rgb(59, 130, 246),
-                            this.viewModel.isFetching,
-                            new MYImage(<ArrowDownCircle size={20} />)
+                            MY.Color.rgb(59, 130, 246),
+                            isFetching,
+                            new MY.Image(<ArrowDownCircle size={20} />)
                         )
-                        : new MYHStack([
-                            new MushroomActionButton(
-                                "Фаза 1",
-                                () => this.viewModel.runPhaseOne(),
-                                MYColor.rgb(31, 41, 55),
-                                isBusy
-                            ),
-                            new MYSpacer(),
-                            new MushroomActionButton(
-                                "Фаза 2",
-                                () => this.viewModel.runPhaseTwo(),
-                                MYColor.rgb(31, 41, 55),
-                                !this.viewModel.isPhaseOneCompleted || isBusy
-                            )
+                        : new MY.HStack([
+                            new MushroomActionButton("Фаза 1", () => this.viewModel.runPhaseOne(), MY.Color.rgb(31, 41, 55), isBusy),
+                            new MY.Spacer(),
+                            new MushroomActionButton("Фаза 2", () => this.viewModel.runPhaseTwo(), MY.Color.rgb(31, 41, 55), !isPhaseOneCompleted || isBusy)
                         ])
                 ])
             ], spacing)
-            .padding({ edges: "all", length: 24 })
-            .background(MYColor.white)
-            .clipShape(new MYRoundedRectangle(24))
+                .padding({ edges: "all", length: 24 })
+                .background(MY.Color.white)
+                .clipShape(new MY.RoundedRectangle(24))
+
         ], spacing)
             .animation();
     }

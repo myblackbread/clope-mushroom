@@ -1,6 +1,6 @@
 import React, { CSSProperties } from "react";
 import { MYView } from "./View";
-import { MYBaseView } from "../components/BaseView";
+import { MYBaseView } from "../react-bridge/BaseView";
 import { MYFrame, isFlexible } from "../types/Frame";
 import { MYDynamicStyle } from "../types/DynamicStyle";
 import { MYAnyViewChild } from "../types/AnyViewChild";
@@ -90,7 +90,7 @@ export abstract class MYContainerView<K extends keyof HTMLElementTagNameMap = "d
                 <MYBaseView
                     frame={{ maxWidth: Infinity, maxHeight: Infinity }}
                     key={index}
-                    dynamicStyle={{ style: (prev) => ({ ...prev, ...this.getChildWrapperStyle(index) }) }}
+                    dynamicStyle={{ style: prev => ({ ...prev, ...this.getChildWrapperStyle(index) }) }}
                 >
                     {child.makeView()}
                 </MYBaseView>

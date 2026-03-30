@@ -1,7 +1,7 @@
 import React from "react";
 import { MYViewModifier } from "../core/ViewModifier";
 import { MYView, MYAnyView } from "../core/View";
-import { MYBaseView } from "../components/BaseView";
+import { MYBaseView } from "../react-bridge/BaseView";
 import { MYFrame } from "../types/Frame";
 import { MYOverlayType } from "../types/OverlayType";
 

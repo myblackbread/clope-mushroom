@@ -1,8 +1,7 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
-import { MYBinding } from "@/src/shared/my-ui";
-import { MushroomDataLoader } from "../../../entities/mushroom/api/MushroomDataLoader";
+import MY from "@/src/shared/my-ui";
 import { ClusterInfo } from "../../../entities/clope/model/ClusterInfo";
-import { WorkerMsgType,  WorkerToMainMessage, MainToWorkerMessage } from "../worker/clope.worker.types";
+import { WorkerMsgType } from "../worker/clope.worker.types";
 
 export function useMushroomViewModel() {
     const [repulsion, setRepulsionInternal] = useState<number>(2.0);
@@ -78,7 +77,7 @@ export function useMushroomViewModel() {
     }, [resetClusteringState]);
 
     const repulsionBinding = useMemo(
-        () => new MYBinding(() => repulsion, setRepulsion),
+        () => new MY.Binding(() => repulsion, setRepulsion),
         [repulsion, setRepulsion]
     );
 

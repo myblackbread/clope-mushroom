@@ -1,3 +1,3 @@
-import { MYBackgroundType } from "../modifiers/BackgroundModifier";
+import { MYBackgroundType } from "../modifiers/styling/BackgroundModifier";
 
 export type MYOverlayType = MYBackgroundType;

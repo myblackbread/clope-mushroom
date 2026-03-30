@@ -1,9 +1,9 @@
 import React from "react";
 import { MYView } from "../core/View";
 import { MYSize } from "../types/Size";
-import { useIsomorphicLayoutEffect } from "../hooks/useIsomorphicLayoutEffect";
+import { useIsomorphicLayoutEffect } from "../react-bridge/hooks/useIsomorphicLayoutEffect";
 import { MYShapeFillModifier } from "../modifiers/ShapeFillModifier";
-import { MYBaseView } from "../components/BaseView";
+import { MYBaseView } from "../react-bridge/BaseView";
 import { MYColorType } from "../types/ColorType";
 import { MYFrame } from "../types/Frame";
 
@@ -60,7 +60,7 @@ const ShapeRenderer: React.FC<{ shape: MYShape }> = ({ shape }) => {
 export abstract class MYShape extends MYView {
   abstract path(container: MYSize): string;
 
-  body(): React.ReactNode {
+  makeView(): React.ReactNode {
     return <ShapeRenderer shape={this} />;
   }
 

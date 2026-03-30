@@ -2,8 +2,8 @@ import React from "react";
 import { MYViewModifier } from "../core/ViewModifier";
 import { MYShape } from "../shapes/Shape";
 import { MYSize } from "../types/Size";
-import { useIsomorphicLayoutEffect } from "../hooks/useIsomorphicLayoutEffect";
-import { MYBaseView } from "../components/BaseView";
+import { useIsomorphicLayoutEffect } from "../react-bridge/hooks/useIsomorphicLayoutEffect";
+import { MYBaseView } from "../react-bridge/BaseView";
 import { MYFrame } from "../types/Frame";
 import { MYAnyView, MYView } from "../core/View";
 

@@ -1,27 +1,27 @@
-import { MYView, MYVStack, MYButton, MYColor, MYCapsule, MYBinding, MYFrame } from "@/src/shared/my-ui";
+import MY from "@/src/shared/my-ui";
 
-export class ExpandablePanel extends MYView {
+export class ExpandablePanel extends MY.View {
     constructor(
-        private readonly isExpanded: MYBinding<boolean>, 
-        private readonly content: MYView
+        private readonly isExpanded: MY.Binding<boolean>, 
+        private readonly content: MY.View
     ) { 
         super(); 
     }
 
-    body(): MYView {
+    body(): MY.View {
         const isExpanded = this.isExpanded.wrappedValue;
         
-        return new MYVStack([
-            new MYButton(
+        return new MY.VStack([
+            new MY.Button(
                 () => this.isExpanded.wrappedValue = !isExpanded,
-                MYColor.rgb(209, 213, 219)
+                MY.Color.rgb(209, 213, 219)
                     .frame({
                         width: isExpanded ? 40 : 60,
                         height: isExpanded ? 5 : 8
                     })
                     .animation()
             )
-            .clipShape(new MYCapsule()),
+            .clipShape(new MY.Capsule()),
             
             isExpanded && this.content
         ], 8);
